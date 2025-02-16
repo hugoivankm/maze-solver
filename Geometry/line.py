@@ -9,7 +9,7 @@ class Line:
         self.x2 = pointB.x
         self.y2 = pointB.y
         
-    def draw(self, canvas: Canvas, fill_color: str):
+    def draw(self, canvas: Canvas, fill_color: str) -> None:
         canvas.create_line(
             self.x1,
             self.y1,
@@ -20,6 +20,6 @@ class Line:
         )
 
     @staticmethod
-    def create_line_from_coords(x1: int, y1: int, x2: int, y2: int):
+    def create_line_from_coords(x1: int, y1: int, x2: int, y2: int) -> 'Line':
         return Line(Point(x1, y1), Point(x2, y2))
        

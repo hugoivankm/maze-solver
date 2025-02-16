@@ -1,5 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
-from Geometry.Line import Line
+from Geometry.line import Line
 
 
 class Window:
@@ -12,17 +12,17 @@ class Window:
         self.__canvas.pack(fill=BOTH, expand=1)
         self.__is_running = False
          
-    def redraw(self):
+    def redraw(self) -> None:
         self.__root.update_idletasks()
         self.__root.update()
        
-    def wait_for_close(self):
+    def wait_for_close(self) -> None:
         self.__is_running = True
         while self.__is_running:
             self.redraw()
 
-    def close(self):
+    def close(self) -> None:
         self.__is_running = False
    
-    def draw_line(self, line: Line, fill_color: str):
+    def draw_line(self, line: Line, fill_color: str) -> None:
         line.draw(self.__canvas, fill_color)
