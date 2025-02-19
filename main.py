@@ -1,10 +1,10 @@
 from window import Window
-from Maze.maze import Maze 
+from Maze.maze import Maze
 
 
 def main():
-    num_rows = 10
-    num_cols = 12
+    num_rows = 4
+    num_cols = 6
     margin = 50
     screen_x = 800
     screen_y = 600
@@ -13,8 +13,10 @@ def main():
     win = Window(screen_x, screen_y)
 
     maze = Maze(margin, margin, num_rows, num_cols, cell_size_x, cell_size_y, win)
+    maze._break_entrance_and_exit()
     
     win.wait_for_close()
 
 
-main()
+if __name__ == "__main__":
+    main()
