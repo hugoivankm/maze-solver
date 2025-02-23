@@ -1,6 +1,7 @@
 import time
 from window import Window
 from .cell import Cell
+import random
 
 
 class Maze:
@@ -13,6 +14,7 @@ class Maze:
         cell_size_x: int,
         cell_size_y: int,
         win: 'Window' = None,
+        initial_seed=0
     ):
 
         if num_cols < 1 or num_rows < 1:
@@ -28,6 +30,7 @@ class Maze:
         self._cells = []
         self._win = win
         self._create_cells()
+        random.seed(initial_seed)
 
     def _create_cells(self):
         for _ in range(self._num_cols):
@@ -40,10 +43,10 @@ class Maze:
             for row in range(self._num_rows):
                 self._draw_cell(col, row)
 
-    def _draw_cell(self, col, row):
+    def _draw_cell(self, col: int, row: int):
         if self._win is None:
             return
-        
+
         cell_x1: int = self._x1 + (col * self._cell_size_x)
         cell_y1: int = self._y1 + (row * self._cell_size_y)
         cell_x2: int = cell_x1 + self._cell_size_x
@@ -65,3 +68,66 @@ class Maze:
                                          1][self._num_rows - 1]
         bottom_right.has_bottom_wall = False
         self._draw_cell(self._num_cols - 1, self._num_rows - 1)
+
+    def get_list_cells_to_visit(self, col, row):
+        valid_cells_indexes = []
+        for i in range(-1, 2, 2):
+            if self.__is_valid_cell(col, row + i):
+                valid_cells_indexes.append((col, row + i))
+            if self.__is_valid_cell(col + i, row):
+                valid_cells_indexes.append((col + i, row))
+        return valid_cells_indexes
+
+    def __is_valid_cell(self, col: int, row: int) -> bool:
+        if col < 0 or row < 0 or col >= self._num_cols or row >= self._num_rows:
+            return False
+
+        current: Cell = self._cells[col][row]
+        if current.is_visited:
+            return False
+        return True
+
+    def _break_walls_r(self, col: int, row: int) -> None:
+        # Mark the current cell as visited
+        current_cell: Cell = self._cells[col][row]
+        current_cell.is_visited = True
+        while True:
+            # Create a list of cells to visit
+            to_visit = self.get_list_cells_to_visit(col, row)
+
+            if len(to_visit) == 0:
+                self._draw_cell(col, row)
+                return
+            else:
+                coords: tuple = random.choice(to_visit)
+                next_cell: Cell = self._cells[coords[0]][coords[1]]
+
+                current_col = col
+                current_row = row
+                next_col = coords[0]
+                next_row = coords[1]
+
+                if next_col - current_col == 1:
+                    # Moving Right
+                    current_cell.has_right_wall = False
+                    next_cell.has_left_wall = False
+
+                elif next_col - current_col == -1:
+                    # Moving Left
+                    current_cell.has_left_wall = False
+                    next_cell.has_right_wall = False
+
+                elif next_row - current_row == 1:
+                    # Moving Down
+                    current_cell.has_bottom_wall = False
+                    next_cell.has_top_wall = False
+
+                elif next_row - current_row == -1:
+                    # Moving up
+                    current_cell.has_top_wall = False
+                    next_cell.has_bottom_wall = False
+
+                else:
+                    raise ValueError("Invalid movement in the labyrinth")
+
+                self._break_walls_r(next_col, next_row)
