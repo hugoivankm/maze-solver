@@ -128,7 +128,7 @@ class Maze:
                     next_cell.has_bottom_wall = False
 
                 else:
-                    raise ValueError("Invalid movement in the labyrinth")
+                    raise ValueError("Invalid movement in the maze")
 
                 self._break_walls_r(next_col, next_row)
 
@@ -137,8 +137,65 @@ class Maze:
             for row in range(self._num_rows):
                 (self._cells[col][row]).is_visited = False
 
-def solve(self):
-    pass
+    def has_direct_path(self, current_col, current_row, next_col, next_row) -> bool:
+        current_cell: Cell = self._cells[current_col][current_row]
+        next_cell: Cell = self._cells[next_col][next_row]
 
-def solve_r(self):
-    pass
+        if next_col - current_col == 1:
+            # Moving Right
+            if not (current_cell.has_right_wall or next_cell.has_left_wall):
+                return True
+            return False
+        elif next_col - current_col == -1:
+            # Moving Left
+            if not (current_cell.has_left_wall or next_cell.has_right_wall):
+                return True
+            return False
+        elif next_row - current_row == 1:
+            # Moving Down
+            if not (current_cell.has_bottom_wall or next_cell.has_top_wall):
+                return True
+            return False
+
+        elif next_row - current_row == -1:
+            # Moving up
+            if not (current_cell.has_top_wall or next_cell.has_bottom_wall):
+                return True
+            return False
+        else:
+            raise ValueError("Invalid movement in the maze")
+
+    def solve(self) -> bool:
+        return self.solve_r(0, 0)
+
+    def solve_r(self, col, row) -> bool:
+        self._animate()
+        current_cell: Cell = self._cells[col][row]
+        current_cell.is_visited = True
+
+        exit_cell: Cell = self._cells[self._num_cols -
+                                      1][self._num_rows - 1]
+
+        if current_cell is exit_cell:
+            return True
+
+        to_visit = self.get_list_cells_to_visit(col, row)
+        if len(to_visit) == 0:
+            self._draw_cell(col, row)
+            return False
+
+        for coords in to_visit:
+            next_cell: Cell = self._cells[coords[0]][coords[1]]
+            current_col = col
+            current_row = row
+            next_col = coords[0]
+            next_row = coords[1]
+
+            if self.has_direct_path(current_col, current_row, next_col, next_row):
+                current_cell.draw_move(next_cell)
+                if self.solve_r(next_col, next_row):
+                    return True
+                else:
+                    current_cell.draw_move(next_cell, undo=True)
+
+        return False
