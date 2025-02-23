@@ -131,3 +131,14 @@ class Maze:
                     raise ValueError("Invalid movement in the labyrinth")
 
                 self._break_walls_r(next_col, next_row)
+
+    def _reset_cells_visited(self):
+        for col in range(self._num_cols):
+            for row in range(self._num_rows):
+                (self._cells[col][row]).is_visited = False
+
+def solve(self):
+    pass
+
+def solve_r(self):
+    pass

@@ -45,6 +45,21 @@ class Tests(unittest.TestCase):
             False
         )
 
+    def test_reset_cells_visited(self):
+        num_cols = 8
+        num_rows = 10
+        m1: Maze = Maze(0, 0, num_rows, num_cols, 10, 10)
+        m1._break_entrance_and_exit()
+        m1._break_walls_r(0, 0)
+        m1._reset_cells_visited()
+
+        any_visited = False
+        for col in range(m1._num_cols):
+            for row in range(m1._num_rows):
+                if (m1._cells[col][row]).is_visited:
+                    any_visited = True
+        self.assertFalse(any_visited)
+
 
 if __name__ == "__main__":
     unittest.main()
